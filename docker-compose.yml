@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/var/www/backend
+    working_dir: /var/www/backend
+    environment:
+      - DB_CONNECTION=sqlite
+      - DB_DATABASE=/var/www/backend/database/database.sqlite
+    networks:
+      - laravel
+
+networks:
+  laravel:
+    driver: bridge
