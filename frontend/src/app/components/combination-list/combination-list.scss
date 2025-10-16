@@ -19,4 +19,31 @@
 
 .combinations-table {
   width: 100%;
+
+  .sort-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    text-align: left;
+    font-weight: 500;
+    padding: 0;
+    min-width: auto;
+
+    .sort-icon {
+      margin-left: 8px;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      opacity: 0.6;
+    }
+
+    &:hover .sort-icon {
+      opacity: 1;
+    }
+  }
+
+  th {
+    padding: 0 !important;
+  }
 }

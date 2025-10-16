@@ -11,9 +11,26 @@ class CombinationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $combinations = Combination::latest()->get();
+        $query = Combination::query();
+
+        // Get sort parameters
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortOrder = $request->input('sort_order', 'desc');
+
+        // Validate sort column
+        $allowedSortColumns = ['id', 'title', 'side', 'created_at', 'updated_at'];
+        if (!in_array($sortBy, $allowedSortColumns)) {
+            $sortBy = 'created_at';
+        }
+
+        // Validate sort order
+        $sortOrder = strtolower($sortOrder) === 'asc' ? 'asc' : 'desc';
+
+        // Apply sorting
+        $combinations = $query->orderBy($sortBy, $sortOrder)->get();
+
         return response()->json($combinations);
     }
 

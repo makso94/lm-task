@@ -12,6 +12,9 @@
 <div class="container">
   <app-combination-list
     [combinations]="combinations"
-    [loading]="loading">
+    [loading]="loading"
+    [currentSortBy]="currentSortBy"
+    [currentSortOrder]="currentSortOrder"
+    (sortChange)="onSortChange($event)">
   </app-combination-list>
 </div>

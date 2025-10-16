@@ -8,7 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { CombinationDialogComponent } from '../combination-dialog/combination-dialog.component';
 import { CombinationList } from '../combination-list/combination-list';
 import { ApiService } from '../../services/api-service';
-import { Combination, CreateCombinationRequest } from '../../models';
+import { Combination, CreateCombinationRequest, SortableColumn, SortOrder } from '../../models/combination.model';
 
 @Component({
   selector: 'app-home',
@@ -28,6 +28,8 @@ export class HomeComponent implements OnInit {
   title = 'LM Application';
   combinations: Combination[] = [];
   loading = false;
+  currentSortBy: SortableColumn = 'created_at';
+  currentSortOrder: SortOrder = 'desc';
 
   constructor(private dialog: MatDialog, private apiService: ApiService) {}
 
@@ -37,7 +39,10 @@ export class HomeComponent implements OnInit {
 
   loadCombinations(): void {
     this.loading = true;
-    this.apiService.getCombinations().subscribe({
+    this.apiService.getCombinations({
+      sort_by: this.currentSortBy,
+      sort_order: this.currentSortOrder
+    }).subscribe({
       next: (response: Combination[]) => {
         this.combinations = response;
         this.loading = false;
@@ -47,6 +52,18 @@ export class HomeComponent implements OnInit {
         this.loading = false;
       },
     });
+  }
+
+  onSortChange(column: SortableColumn): void {
+    if (this.currentSortBy === column) {
+      // Toggle sort order if same column
+      this.currentSortOrder = this.currentSortOrder === 'asc' ? 'desc' : 'asc';
+    } else {
+      // New column, default to descending
+      this.currentSortBy = column;
+      this.currentSortOrder = 'desc';
+    }
+    this.loadCombinations();
   }
 
   onAddCombination(): void {

@@ -20,25 +20,45 @@
       <table mat-table [dataSource]="combinations" class="mat-elevation-z2 combinations-table">
         <!-- ID Column -->
         <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef> ID </th>
+          <th mat-header-cell *matHeaderCellDef>
+            <button mat-button class="sort-header" (click)="onSort('id')">
+              ID
+              <mat-icon class="sort-icon">{{ getSortIcon('id') }}</mat-icon>
+            </button>
+          </th>
           <td mat-cell *matCellDef="let element"> {{element.id}} </td>
         </ng-container>
 
         <!-- Title Column -->
         <ng-container matColumnDef="title">
-          <th mat-header-cell *matHeaderCellDef> Title </th>
+          <th mat-header-cell *matHeaderCellDef>
+            <button mat-button class="sort-header" (click)="onSort('title')">
+              Title
+              <mat-icon class="sort-icon">{{ getSortIcon('title') }}</mat-icon>
+            </button>
+          </th>
           <td mat-cell *matCellDef="let element"> {{element.title}} </td>
         </ng-container>
 
         <!-- Side Column -->
         <ng-container matColumnDef="side">
-          <th mat-header-cell *matHeaderCellDef> Side </th>
+          <th mat-header-cell *matHeaderCellDef>
+            <button mat-button class="sort-header" (click)="onSort('side')">
+              Side
+              <mat-icon class="sort-icon">{{ getSortIcon('side') }}</mat-icon>
+            </button>
+          </th>
           <td mat-cell *matCellDef="let element"> {{element.side}}x{{element.side}} </td>
         </ng-container>
 
         <!-- Created At Column -->
         <ng-container matColumnDef="created_at">
-          <th mat-header-cell *matHeaderCellDef> Created At </th>
+          <th mat-header-cell *matHeaderCellDef>
+            <button mat-button class="sort-header" (click)="onSort('created_at')">
+              Created At
+              <mat-icon class="sort-icon">{{ getSortIcon('created_at') }}</mat-icon>
+            </button>
+          </th>
           <td mat-cell *matCellDef="let element"> {{element.created_at | date:'short'}} </td>
         </ng-container>
 
