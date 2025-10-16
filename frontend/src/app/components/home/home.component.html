@@ -2,16 +2,16 @@
 <mat-toolbar color="primary">
   <span>{{ title }}</span>
   <span class="spacer"></span>
+  <button mat-raised-button color="accent" (click)="onAddCombination()">
+    <mat-icon>add_circle</mat-icon>
+    Add Combination
+  </button>
 </mat-toolbar>
 
-<!-- Hero Section -->
-<mat-card appearance="outlined" style="margin: 0; border-radius: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 80px 24px; text-align: center;">
-  <mat-card-content>
-    <div style="margin-top: 32px;">
-      <button mat-raised-button color="accent" style="margin: 8px;" (click)="onAddCombination()">
-        <mat-icon>add_circle</mat-icon>
-        Add Combination
-      </button>
-    </div>
-  </mat-card-content>
-</mat-card>
+<!-- Combinations List -->
+<div class="container">
+  <app-combination-list
+    [combinations]="combinations"
+    [loading]="loading">
+  </app-combination-list>
+</div>
