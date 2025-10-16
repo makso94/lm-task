@@ -50,7 +50,7 @@ services:
     environment:
       - NODE_ENV=development
       - NG_CLI_ANALYTICS=false
-    command: sh -c "ln -sf /opt/node/node_modules /project/webapp/node_modules && ng serve --host 0.0.0.0"
+    command: sh -c "npm start"
 
 networks:
   app_network:
