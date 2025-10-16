@@ -36,8 +36,8 @@ RUN mkdir -p /home/node/.vscode-server /home/node/.local \
     && chmod ug+s /home/node/.vscode-server /home/node/.local
 
 # Setup NPM
-ADD --chown=node:node webapp/package.json /opt/node
-ADD --chown=node:node webapp/package-lock.json /opt/node
+ADD --chown=node:node frontend/package.json /opt/node
+ADD --chown=node:node frontend/package-lock.json /opt/node
 RUN cd /opt/node && npm i && npm cache clean --force
 
 WORKDIR /project/webapp
