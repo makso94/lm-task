@@ -19,8 +19,8 @@ services:
       context: .
       dockerfile: Laravel.Dockerfile
     container_name: backend_app
-    expose:
-      - "8000"
+    ports:
+      - "8000:8000"
     volumes:
       - ./backend:/var/www/backend
     working_dir: /var/www/backend
@@ -40,8 +40,8 @@ services:
         - BUILDPLATFORM=linux/amd64
         - TARGETPLATFORM=linux/amd64
     container_name: frontend_app
-    expose:
-      - "4200"
+    ports:
+      - "4200:4200"
     volumes:
       - ./frontend:/project/webapp
     working_dir: /project/webapp
