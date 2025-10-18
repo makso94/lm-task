@@ -9,6 +9,111 @@ use Illuminate\Support\Facades\Validator;
 class CombinationController extends Controller
 {
     /**
+     * Count visible positions from each side of the matrix
+     */
+    private function countVisible(array $matrix): array
+    {
+
+        error_log('countVisible');
+
+        $n = count($matrix);
+        $visible = [];
+
+        // Helper function to mark visible positions
+        $markVisible = function ($i, $j) use (&$visible) {
+            $visible["$i,$j"] = true;
+        };
+
+        // --- From Left ---
+        for ($i = 0; $i < $n; $i++) {
+            $maxSeen = -1;
+            for ($j = 0; $j < $n; $j++) {
+                $val = $matrix[$i][$j];
+                if ($val === 0) {
+                    error_log("Skipping position [$i,$j] from left - value is 0");
+                    continue;
+                }
+                if ($val >= $maxSeen) {
+                    $markVisible($i, $j);
+                    $maxSeen = $val;
+                }
+            }
+        }
+
+        // --- From Right ---
+        for ($i = 0; $i < $n; $i++) {
+            $maxSeen = -1;
+            for ($j = $n - 1; $j >= 0; $j--) {
+                $val = $matrix[$i][$j];
+                if ($val === 0) {
+                    error_log("Skipping position [$i,$j] from right - value is 0");
+                    continue;
+                }
+                if ($val >= $maxSeen) {
+                    $markVisible($i, $j);
+                    $maxSeen = $val;
+                }
+            }
+        }
+
+        // --- From Top ---
+        for ($j = 0; $j < $n; $j++) {
+            $maxSeen = -1;
+            for ($i = 0; $i < $n; $i++) {
+                $val = $matrix[$i][$j];
+                if ($val === 0) {
+                    error_log("Skipping position [$i,$j] from top - value is 0");
+                    continue;
+                }
+                if ($val >= $maxSeen) {
+                    $markVisible($i, $j);
+                    $maxSeen = $val;
+                }
+            }
+        }
+
+        // --- From Bottom ---
+        for ($j = 0; $j < $n; $j++) {
+            $maxSeen = -1;
+            for ($i = $n - 1; $i >= 0; $i--) {
+                $val = $matrix[$i][$j];
+                if ($val === 0) {
+                    error_log("Skipping position [$i,$j] from bottom - value is 0");
+                    continue;
+                }
+                if ($val >= $maxSeen) {
+                    $markVisible($i, $j);
+                    $maxSeen = $val;
+                }
+            }
+        }
+
+        // Convert visible keys back to [row, col] pairs
+        $visiblePositions = [];
+        foreach (array_keys($visible) as $key) {
+            [$i, $j] = array_map('intval', explode(',', $key));
+            $visiblePositions[] = [$i, $j];
+        }
+
+        // Calculate not visible positions
+        $notVisiblePositions = [];
+        for ($i = 0; $i < $n; $i++) {
+            for ($j = 0; $j < $n; $j++) {
+                // Skip positions with 0 value and visible positions
+                if ($matrix[$i][$j] !== 0 && !isset($visible["$i,$j"])) {
+                    $notVisiblePositions[] = [$i, $j];
+                }
+            }
+        }
+
+        return [
+            'count' => count($visible),
+            'visible_positions' => $visiblePositions,
+            'not_visible_positions' => $notVisiblePositions
+        ];
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
@@ -79,6 +184,14 @@ class CombinationController extends Controller
                 ], 422);
             }
         }
+
+        // Calculate visible positions
+        $visibleData = $this->countVisible($matrix);
+
+        // Add calculated fields to validated data
+        $validated['visible_count'] = $visibleData['count'];
+        $validated['visible_positions'] = $visibleData['visible_positions'];
+        $validated['not_visible_positions'] = $visibleData['not_visible_positions'];
 
         $combination = Combination::create($validated);
 

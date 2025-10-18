@@ -16,6 +16,9 @@ return new class extends Migration
             $table->string('title', 32);
             $table->integer('side');
             $table->json('matrix');
+            $table->integer('visible_count');
+            $table->json('visible_positions');
+            $table->json('not_visible_positions');
             $table->timestamps();
         });
     }
