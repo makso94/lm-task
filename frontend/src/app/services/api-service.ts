@@ -37,4 +37,8 @@ export class ApiService {
   getCombination(id: number): Observable<Combination> {
     return this.http.get<Combination>(`${API}/combinations/${id}`);
   }
+
+  deleteCombination(id: number): Observable<void> {
+    return this.http.delete<void>(`${API}/combinations/${id}`);
+  }
 }

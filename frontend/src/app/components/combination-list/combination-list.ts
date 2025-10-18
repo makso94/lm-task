@@ -48,9 +48,11 @@ export class CombinationList implements OnInit, OnChanges, AfterViewInit {
   @Input() initialSortOrder: SortOrder = 'desc';
   @Output() sortChange = new EventEmitter<{ column: SortableColumn; direction: SortOrder }>();
   @Output() filterChange = new EventEmitter<string>();
+  @Output() edit = new EventEmitter<Combination>();
+  @Output() delete = new EventEmitter<Combination>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-  displayedColumns: string[] = ['title', 'side', 'visible_count', 'created_at'];
+  displayedColumns: string[] = ['title', 'side', 'visible_count', 'created_at', 'actions'];
   filteredCombinations: Combination[] = [];
   paginatedCombinations: Combination[] = [];
   filterControl = new FormControl('');
@@ -121,5 +123,13 @@ export class CombinationList implements OnInit, OnChanges, AfterViewInit {
     const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
     const endIndex = startIndex + this.paginator.pageSize;
     this.paginatedCombinations = this.filteredCombinations.slice(startIndex, endIndex);
+  }
+
+  onEdit(combination: Combination): void {
+    this.edit.emit(combination);
+  }
+
+  onDelete(combination: Combination): void {
+    this.delete.emit(combination);
   }
 }

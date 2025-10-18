@@ -16,6 +16,8 @@
     [initialSortBy]="initialSortBy"
     [initialSortOrder]="initialSortOrder"
     (sortChange)="onSortChange($event)"
-    (filterChange)="onFilterChange($event)">
+    (filterChange)="onFilterChange($event)"
+    (edit)="onEdit($event)"
+    (delete)="onDelete($event)">
   </app-combination-list>
 </div>

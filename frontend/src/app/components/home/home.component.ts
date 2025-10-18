@@ -4,8 +4,9 @@ import { RouterModule } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CombinationDialogComponent } from '../combination-dialog/combination-dialog.component';
+import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
 import { CombinationList } from '../combination-list/combination-list';
 import { ApiService } from '../../services/api-service';
 import { Combination, CreateCombinationRequest, SortableColumn, SortOrder } from '../../models/combination.model';
@@ -19,6 +20,7 @@ import { Combination, CreateCombinationRequest, SortableColumn, SortOrder } from
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
+    MatDialogModule,
     CombinationList,
   ],
   templateUrl: './home.component.html',
@@ -83,6 +85,32 @@ export class HomeComponent implements OnInit {
     // Trim whitespace and update filter
     this.currentFilter = filter.trim();
     this.loadCombinations();
+  }
+
+  onEdit(combination: Combination): void {
+    console.log('Edit combination:', combination);
+    // TODO: Implement edit functionality
+  }
+
+  onDelete(combination: Combination): void {
+    const dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
+      width: '400px',
+      data: { title: combination.title }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.apiService.deleteCombination(combination.id).subscribe({
+          next: () => {
+            console.log('Combination deleted successfully');
+            this.loadCombinations();
+          },
+          error: (error) => {
+            console.error('Error deleting combination:', error);
+          }
+        });
+      }
+    });
   }
 
   onAddCombination(): void {

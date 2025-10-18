@@ -232,6 +232,11 @@ class CombinationController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $combination = Combination::findOrFail($id);
+        $combination->delete();
+
+        return response()->json([
+            'message' => 'Combination deleted successfully'
+        ], 200);
     }
 }
