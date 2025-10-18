@@ -1,42 +1,127 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ViewChild,
+  AfterViewInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Combination, SortableColumn, SortOrder } from '../../models/combination.model';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 
 @Component({
   selector: 'app-combination-list',
   imports: [
     CommonModule,
+    ReactiveFormsModule,
     MatTableModule,
     MatCardModule,
     MatProgressSpinnerModule,
     MatIconModule,
     MatButtonModule,
+    MatPaginatorModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSortModule,
   ],
   templateUrl: './combination-list.html',
-  styleUrl: './combination-list.scss'
+  styleUrl: './combination-list.scss',
 })
-export class CombinationList {
+export class CombinationList implements OnInit, OnChanges, AfterViewInit {
   @Input() combinations: Combination[] = [];
   @Input() loading = false;
-  @Input() currentSortBy: SortableColumn = 'created_at';
-  @Input() currentSortOrder: SortOrder = 'desc';
-  @Output() sortChange = new EventEmitter<SortableColumn>();
+  @Input() initialSortBy: SortableColumn = 'created_at';
+  @Input() initialSortOrder: SortOrder = 'desc';
+  @Output() sortChange = new EventEmitter<{ column: SortableColumn; direction: SortOrder }>();
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+  displayedColumns: string[] = ['title', 'side', 'visible_count', 'created_at'];
+  filteredCombinations: Combination[] = [];
+  paginatedCombinations: Combination[] = [];
+  filterControl = new FormControl('');
 
-  displayedColumns: string[] = ['id', 'title', 'side', 'visible_count', 'created_at'];
+  // Internal state for current sort
+  currentSortBy: SortableColumn = 'created_at';
+  currentSortOrder: SortOrder = 'desc';
 
-  onSort(column: SortableColumn): void {
-    this.sortChange.emit(column);
+  ngOnInit() {
+    // Set initial sort state from inputs
+    this.currentSortBy = this.initialSortBy;
+    this.currentSortOrder = this.initialSortOrder;
   }
 
-  getSortIcon(column: string): string {
-    if (this.currentSortBy !== column) {
-      return 'unfold_more';
+  ngAfterViewInit() {
+    if (this.sort) {
+      // Listen to sort changes and emit to parent
+      this.sort.sortChange.subscribe(() => {
+        // Update internal state - direction can be 'asc', 'desc', or '' (empty for no sort)
+        this.currentSortBy = this.sort.active as SortableColumn;
+        this.currentSortOrder = this.sort.direction as SortOrder;
+
+        // Emit to parent with both column and direction
+        this.sortChange.emit({
+          column: this.currentSortBy,
+          direction: this.currentSortOrder
+        });
+      });
     }
-    return this.currentSortOrder === 'asc' ? 'arrow_upward' : 'arrow_downward';
+
+    if (this.paginator) {
+      // Listen to paginator changes
+      this.paginator.page.subscribe(() => {
+        this.updatePaginatedData();
+      });
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['combinations']) {
+      this.filteredCombinations = [...this.combinations];
+      this.updatePaginatedData();
+    }
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+
+    if (!filterValue) {
+      this.filteredCombinations = [...this.combinations];
+    } else {
+      this.filteredCombinations = this.combinations.filter(
+        (combination) =>
+          combination.title.toLowerCase().includes(filterValue) ||
+          combination.side.toString().includes(filterValue) ||
+          combination.visible_count.toString().includes(filterValue)
+      );
+    }
+
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
+    this.updatePaginatedData();
+  }
+
+  private updatePaginatedData() {
+    if (!this.paginator) {
+      this.paginatedCombinations = this.filteredCombinations;
+      return;
+    }
+
+    const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
+    const endIndex = startIndex + this.paginator.pageSize;
+    this.paginatedCombinations = this.filteredCombinations.slice(startIndex, endIndex);
   }
 }

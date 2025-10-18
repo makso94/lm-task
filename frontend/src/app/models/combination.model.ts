@@ -23,9 +23,9 @@ export interface CombinationResponse {
 
 export interface CombinationsListResponse extends Array<Combination> {}
 
-export type SortOrder = 'asc' | 'desc';
+export type SortOrder = 'asc' | 'desc' | '';
 
-export type SortableColumn = 'id' | 'title' | 'side' | 'created_at' | 'updated_at';
+export type SortableColumn = 'id' | 'title' | 'side' | 'visible_count' | 'created_at' | 'updated_at';
 
 export interface CombinationQueryParams {
   sort_by?: SortableColumn;

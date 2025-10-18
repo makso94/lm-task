@@ -120,7 +120,7 @@ class CombinationController extends Controller
         $sortOrder = $request->input('sort_order', 'desc');
 
         // Validate sort column
-        $allowedSortColumns = ['id', 'title', 'side', 'created_at', 'updated_at'];
+        $allowedSortColumns = ['id', 'title', 'side', 'visible_count', 'created_at', 'updated_at'];
         if (!in_array($sortBy, $allowedSortColumns)) {
             $sortBy = 'created_at';
         }

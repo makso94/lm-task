@@ -3,76 +3,76 @@
     <mat-card-title>Combinations</mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    @if (loading) {
-      <div class="loading-container">
-        <mat-spinner></mat-spinner>
-      </div>
-    }
+    <!-- @if (loading) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+    } @if (!loading && combinations.length === 0) {
+    <div class="empty-state">
+      <mat-icon class="empty-icon">grid_off</mat-icon>
+      <p>No combinations yet. Click "Add Combination" to create one.</p>
+    </div>
+    } @if (!loading && combinations.length > 0) { } -->
 
-    @if (!loading && combinations.length === 0) {
-      <div class="empty-state">
-        <mat-icon class="empty-icon">grid_off</mat-icon>
-        <p>No combinations yet. Click "Add Combination" to create one.</p>
-      </div>
-    }
+    <mat-form-field>
+      <mat-label>Filter</mat-label>
+      <input
+        matInput
+        [formControl]="filterControl"
+        (keyup)="applyFilter($event)"
+        placeholder="Ex. Mia"
+        #input
+      />
+    </mat-form-field>
 
-    @if (!loading && combinations.length > 0) {
-      <table mat-table [dataSource]="combinations" class="mat-elevation-z2 combinations-table">
-        <!-- ID Column -->
-        <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef>
-            <button mat-button class="sort-header" (click)="onSort('id')">
-              ID
-              <mat-icon class="sort-icon">{{ getSortIcon('id') }}</mat-icon>
-            </button>
-          </th>
-          <td mat-cell *matCellDef="let element"> {{element.id}} </td>
-        </ng-container>
-
+    <div class="mat-elevation-z8">
+      <table
+        mat-table
+        [dataSource]="paginatedCombinations"
+        matSort
+        [matSortActive]="currentSortBy"
+        [matSortDirection]="currentSortOrder"
+      >
         <!-- Title Column -->
         <ng-container matColumnDef="title">
-          <th mat-header-cell *matHeaderCellDef>
-            <button mat-button class="sort-header" (click)="onSort('title')">
-              Title
-              <mat-icon class="sort-icon">{{ getSortIcon('title') }}</mat-icon>
-            </button>
-          </th>
-          <td mat-cell *matCellDef="let element"> {{element.title}} </td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+          <td mat-cell *matCellDef="let row">{{ row.title }}</td>
         </ng-container>
 
-        <!-- Side Column -->
+        <!-- Side Length Column -->
         <ng-container matColumnDef="side">
-          <th mat-header-cell *matHeaderCellDef>
-            <button mat-button class="sort-header" (click)="onSort('side')">
-              Side
-              <mat-icon class="sort-icon">{{ getSortIcon('side') }}</mat-icon>
-            </button>
-          </th>
-          <td mat-cell *matCellDef="let element"> {{element.side}}x{{element.side}} </td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Side Length</th>
+          <td mat-cell *matCellDef="let row">{{ row.side }}</td>
         </ng-container>
 
-        <!-- Visible Count Column -->
+        <!-- Visible Stacks Column -->
         <ng-container matColumnDef="visible_count">
-          <th mat-header-cell *matHeaderCellDef>
-            Visible Count
-          </th>
-          <td mat-cell *matCellDef="let element"> {{element.visible_count}} </td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Visible Stacks</th>
+          <td mat-cell *matCellDef="let row">{{ row.visible_count }}</td>
         </ng-container>
 
         <!-- Created At Column -->
         <ng-container matColumnDef="created_at">
-          <th mat-header-cell *matHeaderCellDef>
-            <button mat-button class="sort-header" (click)="onSort('created_at')">
-              Created At
-              <mat-icon class="sort-icon">{{ getSortIcon('created_at') }}</mat-icon>
-            </button>
-          </th>
-          <td mat-cell *matCellDef="let element"> {{element.created_at | date:'short'}} </td>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Created At</th>
+          <td mat-cell *matCellDef="let row">{{ row.created_at | date : 'dd.MM.yyyy HH:mm' }}</td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+        <!-- Row shown when there is no matching data. -->
+        @if (filteredCombinations.length === 0 && input.value) {
+        <tr class="mat-row">
+          <td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
+        </tr>
+        }
       </table>
-    }
+
+      <mat-paginator
+        [length]="filteredCombinations.length"
+        [pageSizeOptions]="[5, 10, 25, 100]"
+        aria-label="Select page of users"
+      ></mat-paginator>
+    </div>
   </mat-card-content>
 </mat-card>

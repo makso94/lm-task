@@ -28,21 +28,24 @@ export class HomeComponent implements OnInit {
   title = 'LM Application';
   combinations: Combination[] = [];
   loading = false;
-  currentSortBy: SortableColumn = 'created_at';
-  currentSortOrder: SortOrder = 'desc';
+  initialSortBy: SortableColumn = 'created_at';
+  initialSortOrder: SortOrder = 'desc';
 
   constructor(private dialog: MatDialog, private apiService: ApiService) {}
 
   ngOnInit(): void {
-    this.loadCombinations();
+    this.loadCombinations(this.initialSortBy, this.initialSortOrder);
   }
 
-  loadCombinations(): void {
+  loadCombinations(sortBy: SortableColumn, sortOrder: SortOrder): void {
     this.loading = true;
-    this.apiService.getCombinations({
-      sort_by: this.currentSortBy,
-      sort_order: this.currentSortOrder
-    }).subscribe({
+
+    // Only include sort params if sortOrder is not empty
+    const params = sortOrder
+      ? { sort_by: sortBy, sort_order: sortOrder }
+      : {};
+
+    this.apiService.getCombinations(params).subscribe({
       next: (response: Combination[]) => {
         this.combinations = response;
         this.loading = false;
@@ -54,16 +57,8 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  onSortChange(column: SortableColumn): void {
-    if (this.currentSortBy === column) {
-      // Toggle sort order if same column
-      this.currentSortOrder = this.currentSortOrder === 'asc' ? 'desc' : 'asc';
-    } else {
-      // New column, default to descending
-      this.currentSortBy = column;
-      this.currentSortOrder = 'desc';
-    }
-    this.loadCombinations();
+  onSortChange(event: { column: SortableColumn; direction: SortOrder }): void {
+    this.loadCombinations(event.column, event.direction);
   }
 
   onAddCombination(): void {
@@ -78,7 +73,7 @@ export class HomeComponent implements OnInit {
         this.apiService.createCombination(result).subscribe({
           next: (response) => {
             console.log('Combination created successfully:', response);
-            this.loadCombinations(); // Reload the list
+            this.loadCombinations(this.initialSortBy, this.initialSortOrder); // Reload the list
           },
           error: (error) => {
             console.error('Error creating combination:', error);
