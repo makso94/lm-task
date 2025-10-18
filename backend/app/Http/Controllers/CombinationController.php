@@ -14,7 +14,6 @@ class CombinationController extends Controller
     private function countVisible(array $matrix): array
     {
 
-        error_log('countVisible');
 
         $n = count($matrix);
         $visible = [];
@@ -30,7 +29,6 @@ class CombinationController extends Controller
             for ($j = 0; $j < $n; $j++) {
                 $val = $matrix[$i][$j];
                 if ($val === 0) {
-                    error_log("Skipping position [$i,$j] from left - value is 0");
                     continue;
                 }
                 if ($val >= $maxSeen) {
@@ -46,7 +44,6 @@ class CombinationController extends Controller
             for ($j = $n - 1; $j >= 0; $j--) {
                 $val = $matrix[$i][$j];
                 if ($val === 0) {
-                    error_log("Skipping position [$i,$j] from right - value is 0");
                     continue;
                 }
                 if ($val >= $maxSeen) {
@@ -62,7 +59,6 @@ class CombinationController extends Controller
             for ($i = 0; $i < $n; $i++) {
                 $val = $matrix[$i][$j];
                 if ($val === 0) {
-                    error_log("Skipping position [$i,$j] from top - value is 0");
                     continue;
                 }
                 if ($val >= $maxSeen) {
@@ -78,7 +74,6 @@ class CombinationController extends Controller
             for ($i = $n - 1; $i >= 0; $i--) {
                 $val = $matrix[$i][$j];
                 if ($val === 0) {
-                    error_log("Skipping position [$i,$j] from bottom - value is 0");
                     continue;
                 }
                 if ($val >= $maxSeen) {
@@ -184,6 +179,14 @@ class CombinationController extends Controller
                 ], 422);
             }
         }
+
+        // Convert matrix values to integers
+        $matrix = array_map(function ($row) {
+            return array_map('intval', $row);
+        }, $matrix);
+
+        // Update the validated matrix with converted values
+        $validated['matrix'] = $matrix;
 
         // Calculate visible positions
         $visibleData = $this->countVisible($matrix);
