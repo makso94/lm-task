@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { Combination } from '../../models/combination.model';
 
 @Component({
   selector: 'app-combination-dialog',
@@ -24,15 +25,24 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class CombinationDialogComponent implements OnInit {
   combinationForm: FormGroup;
+  isEditMode: boolean = false;
 
   constructor(
     private fb: FormBuilder,
-    private dialogRef: MatDialogRef<CombinationDialogComponent>
+    private dialogRef: MatDialogRef<CombinationDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: Combination | null
   ) {
+    this.isEditMode = !!data;
+
+    // Convert matrix array back to string format for editing
+    const matrixString = data?.matrix
+      ? data.matrix.map(row => row.join(' ')).join('\n')
+      : '';
+
     this.combinationForm = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(32)]],
-      side: ['', [Validators.required, Validators.min(1), Validators.max(50)]],
-      matrix: ['', [Validators.required]]
+      title: [data?.title || '', [Validators.required, Validators.minLength(3), Validators.maxLength(32)]],
+      side: [data?.side || '', [Validators.required, Validators.min(1), Validators.max(50)]],
+      matrix: [matrixString, [Validators.required]]
     });
   }
 
@@ -132,11 +142,18 @@ export class CombinationDialogComponent implements OnInit {
       const side: number = parseInt(formData.side);
 
       // Return the valid data (validation already done by custom validator)
-      this.dialogRef.close({
+      const result: any = {
         title: formData.title,
         side: side,
         matrix: matrixRows.map((row: string) => row.trim().split(/\s+/))
-      });
+      };
+
+      // Include ID if in edit mode
+      if (this.isEditMode && this.data) {
+        result.id = this.data.id;
+      }
+
+      this.dialogRef.close(result);
     }
   }
 

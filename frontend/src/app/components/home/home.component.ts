@@ -88,8 +88,30 @@ export class HomeComponent implements OnInit {
   }
 
   onEdit(combination: Combination): void {
-    console.log('Edit combination:', combination);
-    // TODO: Implement edit functionality
+    const dialogRef = this.dialog.open(CombinationDialogComponent, {
+      width: '600px',
+      disableClose: false,
+      data: combination
+    });
+
+    dialogRef.afterClosed().subscribe((result: any) => {
+      if (result && result.id) {
+        console.log('Updating combination:', result);
+        this.apiService.updateCombination(result.id, {
+          title: result.title,
+          side: result.side,
+          matrix: result.matrix
+        }).subscribe({
+          next: (response) => {
+            console.log('Combination updated successfully:', response);
+            this.loadCombinations();
+          },
+          error: (error) => {
+            console.error('Error updating combination:', error);
+          }
+        });
+      }
+    });
   }
 
   onDelete(combination: Combination): void {

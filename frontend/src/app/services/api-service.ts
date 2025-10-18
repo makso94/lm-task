@@ -38,6 +38,10 @@ export class ApiService {
     return this.http.get<Combination>(`${API}/combinations/${id}`);
   }
 
+  updateCombination(id: number, data: CreateCombinationRequest): Observable<CombinationResponse> {
+    return this.http.put<CombinationResponse>(`${API}/combinations/${id}`, data);
+  }
+
   deleteCombination(id: number): Observable<void> {
     return this.http.delete<void>(`${API}/combinations/${id}`);
   }

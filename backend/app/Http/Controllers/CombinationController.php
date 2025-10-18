@@ -224,7 +224,71 @@ class CombinationController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $combination = Combination::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|min:3|max:32',
+            'side' => 'required|integer|min:1|max:50',
+            'matrix' => 'required|array',
+            'matrix.*' => 'array',
+            'matrix.*.*' => 'numeric|min:0|max:1000',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $validated = $validator->validated();
+
+        // Validate matrix dimensions
+        $side = $validated['side'];
+        $matrix = $validated['matrix'];
+
+        if (count($matrix) !== $side) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => [
+                    'matrix' => ["Matrix must have exactly {$side} rows"]
+                ]
+            ], 422);
+        }
+
+        foreach ($matrix as $rowIndex => $row) {
+            if (count($row) !== $side) {
+                return response()->json([
+                    'message' => 'Validation failed',
+                    'errors' => [
+                        'matrix' => ["Row " . ($rowIndex + 1) . " must have exactly {$side} columns"]
+                    ]
+                ], 422);
+            }
+        }
+
+        // Convert matrix values to integers
+        $matrix = array_map(function ($row) {
+            return array_map('intval', $row);
+        }, $matrix);
+
+        // Update the validated matrix with converted values
+        $validated['matrix'] = $matrix;
+
+        // Calculate visible positions
+        $visibleData = $this->countVisible($matrix);
+
+        // Add calculated fields to validated data
+        $validated['visible_count'] = $visibleData['count'];
+        $validated['visible_positions'] = $visibleData['visible_positions'];
+        $validated['not_visible_positions'] = $visibleData['not_visible_positions'];
+
+        $combination->update($validated);
+
+        return response()->json([
+            'message' => 'Combination updated successfully',
+            'data' => $combination
+        ], 200);
     }
 
     /**

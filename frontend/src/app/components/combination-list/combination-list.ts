@@ -52,7 +52,7 @@ export class CombinationList implements OnInit, OnChanges, AfterViewInit {
   @Output() delete = new EventEmitter<Combination>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
-  displayedColumns: string[] = ['title', 'side', 'visible_count', 'created_at', 'actions'];
+  displayedColumns: string[] = ['title', 'side', 'visible_count', 'created_at', 'updated_at', 'actions'];
   filteredCombinations: Combination[] = [];
   paginatedCombinations: Combination[] = [];
   filterControl = new FormControl('');
