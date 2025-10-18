@@ -14,13 +14,11 @@
     </div>
     } @if (!loading && combinations.length > 0) { } -->
 
-    <mat-form-field>
-      <mat-label>Filter</mat-label>
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Title Filter</mat-label>
       <input
         matInput
         [formControl]="filterControl"
-        (keyup)="applyFilter($event)"
-        placeholder="Ex. Mia"
         #input
       />
     </mat-form-field>

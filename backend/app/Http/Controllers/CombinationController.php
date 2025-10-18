@@ -115,6 +115,12 @@ class CombinationController extends Controller
     {
         $query = Combination::query();
 
+        // Apply filter for title
+        $filter = $request->input('filter');
+        if ($filter) {
+            $query->where('title', 'like', '%' . $filter . '%');
+        }
+
         // Get sort parameters
         $sortBy = $request->input('sort_by', 'created_at');
         $sortOrder = $request->input('sort_order', 'desc');

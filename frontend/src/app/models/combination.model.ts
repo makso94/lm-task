@@ -30,4 +30,5 @@ export type SortableColumn = 'id' | 'title' | 'side' | 'visible_count' | 'create
 export interface CombinationQueryParams {
   sort_by?: SortableColumn;
   sort_order?: SortOrder;
+  filter?: string;
 }

@@ -12,6 +12,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
+import { debounceTime, map, distinctUntilChanged } from 'rxjs';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
@@ -46,6 +47,7 @@ export class CombinationList implements OnInit, OnChanges, AfterViewInit {
   @Input() initialSortBy: SortableColumn = 'created_at';
   @Input() initialSortOrder: SortOrder = 'desc';
   @Output() sortChange = new EventEmitter<{ column: SortableColumn; direction: SortOrder }>();
+  @Output() filterChange = new EventEmitter<string>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   displayedColumns: string[] = ['title', 'side', 'visible_count', 'created_at'];
@@ -61,6 +63,20 @@ export class CombinationList implements OnInit, OnChanges, AfterViewInit {
     // Set initial sort state from inputs
     this.currentSortBy = this.initialSortBy;
     this.currentSortOrder = this.initialSortOrder;
+
+    // Subscribe to filter changes with debounce and distinctUntilChanged
+    this.filterControl.valueChanges
+      .pipe(
+        debounceTime(300),
+        map((value: string | null) => (value || '').trim()),
+        distinctUntilChanged()
+      )
+      .subscribe((filterValue: string) => {
+        this.filterChange.emit(filterValue);
+        if (this.paginator) {
+          this.paginator.firstPage();
+        }
+      });
   }
 
   ngAfterViewInit() {
@@ -89,30 +105,12 @@ export class CombinationList implements OnInit, OnChanges, AfterViewInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['combinations']) {
+      // Since filtering is now done on backend, just use combinations directly
       this.filteredCombinations = [...this.combinations];
       this.updatePaginatedData();
     }
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
-
-    if (!filterValue) {
-      this.filteredCombinations = [...this.combinations];
-    } else {
-      this.filteredCombinations = this.combinations.filter(
-        (combination) =>
-          combination.title.toLowerCase().includes(filterValue) ||
-          combination.side.toString().includes(filterValue) ||
-          combination.visible_count.toString().includes(filterValue)
-      );
-    }
-
-    if (this.paginator) {
-      this.paginator.firstPage();
-    }
-    this.updatePaginatedData();
-  }
 
   private updatePaginatedData() {
     if (!this.paginator) {

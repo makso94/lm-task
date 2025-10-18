@@ -23,6 +23,10 @@ export class ApiService {
       params = params.set('sort_order', queryParams.sort_order);
     }
 
+    if (queryParams?.filter) {
+      params = params.set('filter', queryParams.filter);
+    }
+
     return this.http.get<Combination[]>(`${API}/combinations`, { params });
   }
 
