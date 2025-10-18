@@ -3,24 +3,9 @@
     <mat-card-title>Combinations</mat-card-title>
   </mat-card-header>
   <mat-card-content>
-    <!-- @if (loading) {
-    <div class="loading-container">
-      <mat-spinner></mat-spinner>
-    </div>
-    } @if (!loading && combinations.length === 0) {
-    <div class="empty-state">
-      <mat-icon class="empty-icon">grid_off</mat-icon>
-      <p>No combinations yet. Click "Add Combination" to create one.</p>
-    </div>
-    } @if (!loading && combinations.length > 0) { } -->
-
     <mat-form-field appearance="outline" class="filter-field">
       <mat-label>Title Filter</mat-label>
-      <input
-        matInput
-        [formControl]="filterControl"
-        #input
-      />
+      <input matInput [formControl]="filterControl" />
     </mat-form-field>
 
     <div class="mat-elevation-z8">
@@ -59,11 +44,15 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
         <!-- Row shown when there is no matching data. -->
-        @if (filteredCombinations.length === 0 && input.value) {
-        <tr class="mat-row">
-          <td class="mat-cell" colspan="4">No data matching the filter "{{ input.value }}"</td>
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" colspan="4">
+            @if (filterControl.value) {
+              No data matching the filter "{{ filterControl.value }}"
+            } @else {
+              No data available
+            }
+          </td>
         </tr>
-        }
       </table>
 
       <mat-paginator
