@@ -3,6 +3,9 @@ export interface Combination {
   title: string;
   side: number;
   matrix: number[][];
+  visible_count: number;
+  visible_positions: [number, number][];
+  not_visible_positions: [number, number][];
   created_at: string;
   updated_at: string;
 }

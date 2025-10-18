@@ -51,6 +51,14 @@
           <td mat-cell *matCellDef="let element"> {{element.side}}x{{element.side}} </td>
         </ng-container>
 
+        <!-- Visible Count Column -->
+        <ng-container matColumnDef="visible_count">
+          <th mat-header-cell *matHeaderCellDef>
+            Visible Count
+          </th>
+          <td mat-cell *matCellDef="let element"> {{element.visible_count}} </td>
+        </ng-container>
+
         <!-- Created At Column -->
         <ng-container matColumnDef="created_at">
           <th mat-header-cell *matHeaderCellDef>

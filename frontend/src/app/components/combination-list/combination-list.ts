@@ -27,7 +27,7 @@ export class CombinationList {
   @Input() currentSortOrder: SortOrder = 'desc';
   @Output() sortChange = new EventEmitter<SortableColumn>();
 
-  displayedColumns: string[] = ['id', 'title', 'side', 'created_at'];
+  displayedColumns: string[] = ['id', 'title', 'side', 'visible_count', 'created_at'];
 
   onSort(column: SortableColumn): void {
     this.sortChange.emit(column);
