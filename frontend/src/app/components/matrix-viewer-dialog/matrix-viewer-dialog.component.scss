@@ -4,11 +4,44 @@
   gap: 24px;
 }
 
-.matrix-grid {
-  display: grid;
-  gap: 4px;
+.matrix-wrapper {
   max-width: 800px;
   margin: 0 auto;
+}
+
+.matrix-labels-top {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.matrix-label-corner {
+  width: 30px;
+}
+
+.matrix-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 12px;
+  color: #666;
+  padding: 4px;
+}
+
+.matrix-with-labels {
+  display: grid;
+  gap: 4px;
+}
+
+.matrix-label-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 12px;
+  color: #666;
+  width: 30px;
 }
 
 .matrix-cell {

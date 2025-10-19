@@ -2,18 +2,30 @@
 
 <mat-dialog-content>
   <div class="matrix-container">
-    <div class="matrix-grid" [style.grid-template-columns]="'repeat(' + data.side + ', 1fr)'">
-      @for (row of data.matrix; track rowIndex; let rowIndex = $index) {
-        @for (cell of row; track colIndex; let colIndex = $index) {
-          <div
-            class="matrix-cell"
-            [class.visible]="isVisible(rowIndex, colIndex)"
-            [class.not-visible]="isNotVisible(rowIndex, colIndex)"
-            [class.empty]="cell === 0">
-            {{ cell }}
-          </div>
+    <div class="matrix-wrapper">
+      <!-- Top row labels (column numbers) -->
+      <div class="matrix-labels-top" [style.grid-template-columns]="'auto repeat(' + data.side + ', 1fr)'">
+        <div class="matrix-label-corner"></div>
+        @for (col of data.matrix[0]; track colIndex; let colIndex = $index) {
+          <div class="matrix-label">{{ colIndex + 1 }}</div>
         }
-      }
+      </div>
+
+      <!-- Matrix with left row labels -->
+      <div class="matrix-with-labels" [style.grid-template-columns]="'auto repeat(' + data.side + ', 1fr)'">
+        @for (row of data.matrix; track rowIndex; let rowIndex = $index) {
+          <div class="matrix-label-left">{{ rowIndex + 1 }}</div>
+          @for (cell of row; track colIndex; let colIndex = $index) {
+            <div
+              class="matrix-cell"
+              [class.visible]="isVisible(rowIndex, colIndex)"
+              [class.not-visible]="isNotVisible(rowIndex, colIndex)"
+              [class.empty]="cell === 0">
+              {{ cell }}
+            </div>
+          }
+        }
+      </div>
     </div>
 
     <div class="matrix-info">
@@ -36,10 +48,10 @@
         @if (data.not_visible_positions.length > 0 || emptyPositions.length > 0) {
           <div class="positions-list">
             @for (pos of data.not_visible_positions; track $index) {
-              <span class="position-badge">({{ pos[0] }}, {{ pos[1] }})</span>
+              <span class="position-badge">({{ pos[0] + 1 }}, {{ pos[1] + 1 }})</span>
             }
             @for (pos of emptyPositions; track $index) {
-              <span class="position-badge empty">({{ pos[0] }}, {{ pos[1] }}) - Empty</span>
+              <span class="position-badge empty">({{ pos[0] + 1 }}, {{ pos[1] + 1 }}) - Empty</span>
             }
           </div>
         }
