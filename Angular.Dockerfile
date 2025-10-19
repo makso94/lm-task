@@ -16,7 +16,7 @@ RUN echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen
 RUN locale-gen
 
 # Frontend environment tools
-RUN npm i -g @angular/cli@18
+RUN npm i -g @angular/cli@20
 
 # Prepare dependencies path on the target
 RUN mkdir -p /opt/node/node_modules && chown -R node:node /opt/node
