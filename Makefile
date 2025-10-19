@@ -19,8 +19,7 @@ frontend-shell:
 	docker compose exec frontend bash
 
 start:
-	@docker compose up -d 2>/dev/null || true
-	docker compose exec backend composer install
+	docker compose up -d
 	docker compose exec backend cp -n /var/www/backend/.env.example /var/www/backend/.env || true
 	docker compose exec backend php artisan key:generate
 	docker compose exec backend touch /var/www/backend/database/database.sqlite
