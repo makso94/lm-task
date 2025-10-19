@@ -54,16 +54,14 @@ export class CombinationList implements OnInit, OnChanges, AfterViewInit {
   filteredCombinations: CombinationSummary[] = [];
   filterControl = new FormControl('');
 
-  // Internal state for current sort
+  // Current sort
   currentSortBy: SortableColumn = 'created_at';
   currentSortOrder: SortOrder = 'desc';
 
   ngOnInit() {
-    // Set initial sort state from inputs
     this.currentSortBy = this.initialSortBy;
     this.currentSortOrder = this.initialSortOrder;
 
-    // Subscribe to filter changes with debounce and distinctUntilChanged
     this.filterControl.valueChanges
       .pipe(
         debounceTime(300),
@@ -77,13 +75,10 @@ export class CombinationList implements OnInit, OnChanges, AfterViewInit {
 
   ngAfterViewInit() {
     if (this.sort) {
-      // Listen to sort changes and emit to parent
       this.sort.sortChange.subscribe(() => {
-        // Update internal state - direction can be 'asc', 'desc', or '' (empty for no sort)
         this.currentSortBy = this.sort.active as SortableColumn;
         this.currentSortOrder = this.sort.direction as SortOrder;
 
-        // Emit to parent with both column and direction
         this.sortChange.emit({
           column: this.currentSortBy,
           direction: this.currentSortOrder
@@ -94,7 +89,6 @@ export class CombinationList implements OnInit, OnChanges, AfterViewInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['combinations']) {
-      // Since filtering is now done on backend, just use combinations directly
       this.filteredCombinations = [...this.combinations];
     }
   }

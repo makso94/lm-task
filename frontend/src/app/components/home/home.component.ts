@@ -34,7 +34,7 @@ export class HomeComponent implements OnInit {
   initialSortBy: SortableColumn = 'created_at';
   initialSortOrder: SortOrder = 'desc';
 
-  // Track current filter and sort state for API requests
+  // Current filter and sort state
   private currentFilter = '';
   private currentSortBy: SortableColumn = 'created_at';
   private currentSortOrder: SortOrder = 'desc';
@@ -50,16 +50,16 @@ export class HomeComponent implements OnInit {
   loadCombinations(): void {
     this.loading = true;
 
-    // Build query params
+    // Build params
     const params: any = {};
 
-    // Only include sort params if sortOrder is not empty
+    // Add sort params if set
     if (this.currentSortOrder) {
       params.sort_by = this.currentSortBy;
       params.sort_order = this.currentSortOrder;
     }
 
-    // Only include filter param if not empty
+    // Add filter if set
     if (this.currentFilter) {
       params.filter = this.currentFilter;
     }
@@ -69,8 +69,7 @@ export class HomeComponent implements OnInit {
         this.combinations = response;
         this.loading = false;
       },
-      error: (error) => {
-        console.error('Error loading combinations:', error);
+      error: () => {
         this.loading = false;
       },
     });
@@ -83,13 +82,12 @@ export class HomeComponent implements OnInit {
   }
 
   onFilterChange(filter: string): void {
-    // Trim whitespace and update filter
     this.currentFilter = filter.trim();
     this.loadCombinations();
   }
 
   onEdit(combination: CombinationSummary): void {
-    // First fetch the full combination data including the matrix
+    // Need full data with matrix
     this.loading = true;
     this.apiService.getCombination(combination.id).subscribe({
       next: (fullCombination: Combination) => {
@@ -102,25 +100,21 @@ export class HomeComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe((result: any) => {
           if (result && result.id) {
-            console.log('Updating combination:', result);
             this.apiService.updateCombination(result.id, {
               title: result.title,
               side: result.side,
               matrix: result.matrix
             }).subscribe({
-              next: (response) => {
-                console.log('Combination updated successfully:', response);
+              next: () => {
                 this.loadCombinations();
               },
-              error: (error) => {
-                console.error('Error updating combination:', error);
+              error: () => {
               }
             });
           }
         });
       },
       error: (error) => {
-        console.error('Error loading combination for edit:', error);
         this.loading = false;
       }
     });
@@ -136,11 +130,9 @@ export class HomeComponent implements OnInit {
       if (result) {
         this.apiService.deleteCombination(combination.id).subscribe({
           next: () => {
-            console.log('Combination deleted successfully');
             this.loadCombinations();
           },
-          error: (error) => {
-            console.error('Error deleting combination:', error);
+          error: () => {
           }
         });
       }
@@ -155,14 +147,11 @@ export class HomeComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result: CreateCombinationRequest | undefined) => {
       if (result) {
-        console.log('Combination data:', result);
         this.apiService.createCombination(result).subscribe({
-          next: (response) => {
-            console.log('Combination created successfully:', response);
-            this.loadCombinations(); // Reload the list
+          next: () => {
+            this.loadCombinations();
           },
-          error: (error) => {
-            console.error('Error creating combination:', error);
+          error: () => {
           },
         });
       }
@@ -181,7 +170,6 @@ export class HomeComponent implements OnInit {
         });
       },
       error: (error) => {
-        console.error('Error loading combination details:', error);
         this.loading = false;
       }
     });

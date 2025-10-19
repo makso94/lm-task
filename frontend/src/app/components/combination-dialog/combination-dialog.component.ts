@@ -34,7 +34,7 @@ export class CombinationDialogComponent implements OnInit {
   ) {
     this.isEditMode = !!data;
 
-    // Convert matrix array back to string format for editing
+    // Convert matrix to string for editing
     const matrixString = data?.matrix
       ? data.matrix.map(row => row.join(' ')).join('\n')
       : '';
@@ -47,35 +47,33 @@ export class CombinationDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Watch for changes in 'side' field and revalidate matrix
+    // Revalidate matrix when side changes
     this.combinationForm.get('side')?.valueChanges.subscribe(() => {
       this.combinationForm.get('matrix')?.updateValueAndValidity();
     });
 
-    // Add custom validator to matrix field
+    // Custom matrix validation
     this.combinationForm.get('matrix')?.setValidators([
       Validators.required,
       this.matrixValidator.bind(this)
     ]);
   }
 
-  // Custom validator for matrix
   matrixValidator(control: AbstractControl): ValidationErrors | null {
     const matrixValue = control.value;
     const sideValue = this.combinationForm?.get('side')?.value;
 
     if (!matrixValue || !sideValue) {
-      return null; // Don't validate if either field is empty
+      return null;
     }
 
     const side = parseInt(sideValue);
     if (isNaN(side) || side < 1 || side > 50) {
-      return null; // Don't validate matrix if side is invalid
+      return null;
     }
 
     const rows = matrixValue.trim().split('\n').filter((row: string) => row.trim() !== '');
 
-    // Check number of rows
     if (rows.length !== side) {
       return {
         matrixRows: {
@@ -86,7 +84,6 @@ export class CombinationDialogComponent implements OnInit {
       };
     }
 
-    // Check each row has correct number of columns and validate values
     for (let i = 0; i < rows.length; i++) {
       const values = rows[i].trim().split(/\s+/);
       if (values.length !== side) {
@@ -100,7 +97,6 @@ export class CombinationDialogComponent implements OnInit {
         };
       }
 
-      // Validate each value is a number between 0 and 1000
       for (let j = 0; j < values.length; j++) {
         const num = parseFloat(values[j]);
         if (isNaN(num)) {
@@ -126,7 +122,7 @@ export class CombinationDialogComponent implements OnInit {
       }
     }
 
-    return null; // Validation passed
+    return null;
   }
 
   onCancel(): void {
@@ -137,18 +133,16 @@ export class CombinationDialogComponent implements OnInit {
     if (this.combinationForm.valid) {
       const formData = this.combinationForm.value;
 
-      // Parse matrix data - each row separated by newlines, values by spaces
+      // Parse matrix string
       const matrixRows: string[] = formData.matrix.trim().split('\n').filter((row: string) => row.trim() !== '');
       const side: number = parseInt(formData.side);
 
-      // Return the valid data (validation already done by custom validator)
       const result: any = {
         title: formData.title,
         side: side,
         matrix: matrixRows.map((row: string) => row.trim().split(/\s+/))
       };
 
-      // Include ID if in edit mode
       if (this.isEditMode && this.data) {
         result.id = this.data.id;
       }

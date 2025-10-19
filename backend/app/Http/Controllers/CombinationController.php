@@ -8,9 +8,6 @@ use Illuminate\Support\Facades\Validator;
 
 class CombinationController extends Controller
 {
-    /**
-     * Validate and process combination data
-     */
     private function validateAndProcessCombination(Request $request): array
     {
         $validator = Validator::make($request->all(), [
@@ -30,7 +27,7 @@ class CombinationController extends Controller
 
         $validated = $validator->validated();
 
-        // Validate matrix dimensions
+        // Check matrix is the right size
         $side = $validated['side'];
         $matrix = $validated['matrix'];
 
@@ -54,18 +51,18 @@ class CombinationController extends Controller
             }
         }
 
-        // Convert matrix values to integers
+        // Cast to ints
         $matrix = array_map(function ($row) {
             return array_map('intval', $row);
         }, $matrix);
 
-        // Update the validated matrix with converted values
+        // Update matrix with converted values
         $validated['matrix'] = $matrix;
 
-        // Calculate visible positions
+        // Calculate visibility
         $visibleData = $this->countVisible($matrix);
 
-        // Add calculated fields to validated data
+        // Add calculated fields
         $validated['visible_count'] = $visibleData['count'];
         $validated['visible_positions'] = $visibleData['visible_positions'];
         $validated['not_visible_positions'] = $visibleData['not_visible_positions'];
@@ -73,9 +70,6 @@ class CombinationController extends Controller
         return $validated;
     }
 
-    /**
-     * Count visible positions from each side of the matrix
-     */
     private function countVisible(array $matrix): array
     {
 
@@ -83,7 +77,7 @@ class CombinationController extends Controller
         $n = count($matrix);
         $visible = [];
 
-        // Helper function to mark visible positions
+        // Track which cells are visible
         $markVisible = function ($i, $j) use (&$visible) {
             $visible["$i,$j"] = true;
         };
@@ -148,18 +142,18 @@ class CombinationController extends Controller
             }
         }
 
-        // Convert visible keys back to [row, col] pairs
+        // Convert to array of positions
         $visiblePositions = [];
         foreach (array_keys($visible) as $key) {
             [$i, $j] = array_map('intval', explode(',', $key));
             $visiblePositions[] = [$i, $j];
         }
 
-        // Calculate not visible positions
+        // Find non-visible positions
         $notVisiblePositions = [];
         for ($i = 0; $i < $n; $i++) {
             for ($j = 0; $j < $n; $j++) {
-                // Skip positions with 0 value and visible positions
+                // Skip zeros and already visible cells
                 if ($matrix[$i][$j] !== 0 && !isset($visible["$i,$j"])) {
                     $notVisiblePositions[] = [$i, $j];
                 }
@@ -173,20 +167,17 @@ class CombinationController extends Controller
         ];
     }
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $query = Combination::query();
 
-        // Apply filter for title
+        // Filter by title if provided
         $filter = $request->input('filter');
         if ($filter) {
             $query->where('title', 'like', '%' . $filter . '%');
         }
 
-        // Get sort parameters
+        // Sorting
         $sortBy = $request->input('sort_by', 'created_at');
         $sortOrder = $request->input('sort_order', 'desc');
 
@@ -199,7 +190,7 @@ class CombinationController extends Controller
         // Validate sort order
         $sortOrder = strtolower($sortOrder) === 'asc' ? 'asc' : 'desc';
 
-        // Apply sorting and select only columns needed for list view
+        // Get results with only needed columns
         $combinations = $query
             ->select('id', 'title', 'side', 'visible_count', 'created_at', 'updated_at')
             ->orderBy($sortBy, $sortOrder)
@@ -208,9 +199,6 @@ class CombinationController extends Controller
         return response()->json($combinations);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validated = $this->validateAndProcessCombination($request);
@@ -222,18 +210,12 @@ class CombinationController extends Controller
         ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         $combination = Combination::findOrFail($id);
         return response()->json($combination);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $combination = Combination::findOrFail($id);
@@ -246,9 +228,6 @@ class CombinationController extends Controller
         ], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $combination = Combination::findOrFail($id);
