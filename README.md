@@ -11,24 +11,26 @@ Make sure you have these installed on your machine:
 
 ## Quick Start
 
-If this is your first time setting up the project, just run:
+**First time setup only** - run these commands:
 
 ```bash
-make start
+make build
+make up
+make init
 ```
 
 This will:
+- Build the Docker containers
 - Start up all the containers
 - Copy the environment configuration
 - Generate the application key
 - Create the SQLite database
-- Install all backend dependencies
 - Run database migrations
 
 Once that's done, you can access the application at:
 - http://localhost
 
-For subsequent starts, just use:
+**For all subsequent runs**, just use:
 ```bash
 make up
 ```
@@ -38,7 +40,7 @@ make up
 The Makefile includes several helpful commands:
 
 ```bash
-make start          # Start containers and run full setup
+make init           # First time setup (run once)
 make build          # Build Docker containers
 make up             # Start containers only
 make down           # Stop containers
