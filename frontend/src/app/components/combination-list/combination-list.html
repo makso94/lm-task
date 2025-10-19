@@ -11,7 +11,7 @@
     <div class="mat-elevation-z8">
       <table
         mat-table
-        [dataSource]="paginatedCombinations"
+        [dataSource]="filteredCombinations"
         matSort
         [matSortActive]="currentSortBy"
         [matSortDirection]="currentSortOrder"
@@ -73,12 +73,6 @@
           </td>
         </tr>
       </table>
-
-      <mat-paginator
-        [length]="filteredCombinations.length"
-        [pageSizeOptions]="[5, 10, 25, 100]"
-        aria-label="Select page of users"
-      ></mat-paginator>
     </div>
   </mat-card-content>
 </mat-card>

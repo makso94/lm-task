@@ -18,7 +18,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { CombinationSummary, SortableColumn, SortOrder } from '../../models/combination.model';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSort, MatSortModule } from '@angular/material/sort';
@@ -33,7 +32,6 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
     MatProgressSpinnerModule,
     MatIconModule,
     MatButtonModule,
-    MatPaginatorModule,
     MatFormFieldModule,
     MatInputModule,
     MatSortModule,
@@ -51,11 +49,9 @@ export class CombinationList implements OnInit, OnChanges, AfterViewInit {
   @Output() edit = new EventEmitter<CombinationSummary>();
   @Output() delete = new EventEmitter<CombinationSummary>();
   @Output() rowClick = new EventEmitter<CombinationSummary>();
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   displayedColumns: string[] = ['title', 'side', 'visible_count', 'created_at', 'updated_at', 'actions'];
   filteredCombinations: CombinationSummary[] = [];
-  paginatedCombinations: CombinationSummary[] = [];
   filterControl = new FormControl('');
 
   // Internal state for current sort
@@ -76,9 +72,6 @@ export class CombinationList implements OnInit, OnChanges, AfterViewInit {
       )
       .subscribe((filterValue: string) => {
         this.filterChange.emit(filterValue);
-        if (this.paginator) {
-          this.paginator.firstPage();
-        }
       });
   }
 
@@ -97,33 +90,13 @@ export class CombinationList implements OnInit, OnChanges, AfterViewInit {
         });
       });
     }
-
-    if (this.paginator) {
-      // Listen to paginator changes
-      this.paginator.page.subscribe(() => {
-        this.updatePaginatedData();
-      });
-    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['combinations']) {
       // Since filtering is now done on backend, just use combinations directly
       this.filteredCombinations = [...this.combinations];
-      this.updatePaginatedData();
     }
-  }
-
-
-  private updatePaginatedData() {
-    if (!this.paginator) {
-      this.paginatedCombinations = this.filteredCombinations;
-      return;
-    }
-
-    const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
-    const endIndex = startIndex + this.paginator.pageSize;
-    this.paginatedCombinations = this.filteredCombinations.slice(startIndex, endIndex);
   }
 
   onEdit(combination: CombinationSummary): void {
