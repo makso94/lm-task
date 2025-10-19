@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CombinationDialogComponent } from '../combination-dialog/combination-dialog.component';
 import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-delete-dialog.component';
+import { MatrixViewerDialogComponent } from '../matrix-viewer-dialog/matrix-viewer-dialog.component';
 import { CombinationList } from '../combination-list/combination-list';
 import { ApiService } from '../../services/api-service';
 import { Combination, CreateCombinationRequest, SortableColumn, SortOrder } from '../../models/combination.model';
@@ -89,7 +90,7 @@ export class HomeComponent implements OnInit {
 
   onEdit(combination: Combination): void {
     const dialogRef = this.dialog.open(CombinationDialogComponent, {
-      width: '600px',
+      width: '800px',
       disableClose: false,
       data: combination
     });
@@ -137,7 +138,7 @@ export class HomeComponent implements OnInit {
 
   onAddCombination(): void {
     const dialogRef = this.dialog.open(CombinationDialogComponent, {
-      width: '600px',
+      width: '800px',
       disableClose: false,
     });
 
@@ -154,6 +155,14 @@ export class HomeComponent implements OnInit {
           },
         });
       }
+    });
+  }
+
+  onRowClick(combination: Combination): void {
+    this.dialog.open(MatrixViewerDialogComponent, {
+      width: '800px',
+      maxWidth: '90vw',
+      data: combination
     });
   }
 }

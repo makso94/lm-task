@@ -1,0 +1,65 @@
+<h2 mat-dialog-title>{{ data.title }}</h2>
+
+<mat-dialog-content>
+  <div class="matrix-container">
+    <div class="matrix-grid" [style.grid-template-columns]="'repeat(' + data.side + ', 1fr)'">
+      @for (row of data.matrix; track rowIndex; let rowIndex = $index) {
+        @for (cell of row; track colIndex; let colIndex = $index) {
+          <div
+            class="matrix-cell"
+            [class.visible]="isVisible(rowIndex, colIndex)"
+            [class.not-visible]="isNotVisible(rowIndex, colIndex)"
+            [class.empty]="cell === 0">
+            {{ cell }}
+          </div>
+        }
+      }
+    </div>
+
+    <div class="matrix-info">
+      <div class="info-section">
+        <h3>
+          <mat-icon>visibility</mat-icon>
+          Visible Positions
+        </h3>
+        <p class="count">{{ data.visible_count }}</p>
+        <p class="description">Stacks that can be seen from at least one side</p>
+      </div>
+
+      <div class="info-section">
+        <h3>
+          <mat-icon>visibility_off</mat-icon>
+          Not Visible & Empty Positions
+        </h3>
+        <p class="count">{{ data.not_visible_positions.length + emptyPositions.length }}</p>
+        <p class="description">Stacks hidden by taller stacks and empty positions (0)</p>
+        @if (data.not_visible_positions.length > 0 || emptyPositions.length > 0) {
+          <div class="positions-list">
+            @for (pos of data.not_visible_positions; track $index) {
+              <span class="position-badge">({{ pos[0] }}, {{ pos[1] }})</span>
+            }
+            @for (pos of emptyPositions; track $index) {
+              <span class="position-badge empty">({{ pos[0] }}, {{ pos[1] }}) - Empty</span>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="info-section">
+        <h3>
+          <mat-icon>grid_3x3</mat-icon>
+          Total Positions
+        </h3>
+        <p class="count">{{ data.side * data.side }}</p>
+        <p class="description">Total cells in {{ data.side }}x{{ data.side }} matrix</p>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-raised-button color="primary" (click)="onClose()">
+    <mat-icon>close</mat-icon>
+    Close
+  </button>
+</mat-dialog-actions>

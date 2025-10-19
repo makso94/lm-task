@@ -50,6 +50,7 @@ export class CombinationList implements OnInit, OnChanges, AfterViewInit {
   @Output() filterChange = new EventEmitter<string>();
   @Output() edit = new EventEmitter<Combination>();
   @Output() delete = new EventEmitter<Combination>();
+  @Output() rowClick = new EventEmitter<Combination>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   displayedColumns: string[] = ['title', 'side', 'visible_count', 'created_at', 'updated_at', 'actions'];
@@ -131,5 +132,9 @@ export class CombinationList implements OnInit, OnChanges, AfterViewInit {
 
   onDelete(combination: Combination): void {
     this.delete.emit(combination);
+  }
+
+  onRowClick(combination: Combination): void {
+    this.rowClick.emit(combination);
   }
 }
