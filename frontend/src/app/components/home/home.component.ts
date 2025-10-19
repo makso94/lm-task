@@ -10,7 +10,7 @@ import { ConfirmDeleteDialogComponent } from '../confirm-delete-dialog/confirm-d
 import { MatrixViewerDialogComponent } from '../matrix-viewer-dialog/matrix-viewer-dialog.component';
 import { CombinationList } from '../combination-list/combination-list';
 import { ApiService } from '../../services/api-service';
-import { Combination, CreateCombinationRequest, SortableColumn, SortOrder } from '../../models/combination.model';
+import { Combination, CombinationSummary, CreateCombinationRequest, SortableColumn, SortOrder } from '../../models/combination.model';
 
 @Component({
   selector: 'app-home',
@@ -29,7 +29,7 @@ import { Combination, CreateCombinationRequest, SortableColumn, SortOrder } from
 })
 export class HomeComponent implements OnInit {
   title = 'LM Application';
-  combinations: Combination[] = [];
+  combinations: CombinationSummary[] = [];
   loading = false;
   initialSortBy: SortableColumn = 'created_at';
   initialSortOrder: SortOrder = 'desc';
@@ -65,7 +65,7 @@ export class HomeComponent implements OnInit {
     }
 
     this.apiService.getCombinations(params).subscribe({
-      next: (response: Combination[]) => {
+      next: (response: CombinationSummary[]) => {
         this.combinations = response;
         this.loading = false;
       },
@@ -88,34 +88,45 @@ export class HomeComponent implements OnInit {
     this.loadCombinations();
   }
 
-  onEdit(combination: Combination): void {
-    const dialogRef = this.dialog.open(CombinationDialogComponent, {
-      width: '800px',
-      disableClose: false,
-      data: combination
-    });
+  onEdit(combination: CombinationSummary): void {
+    // First fetch the full combination data including the matrix
+    this.loading = true;
+    this.apiService.getCombination(combination.id).subscribe({
+      next: (fullCombination: Combination) => {
+        this.loading = false;
+        const dialogRef = this.dialog.open(CombinationDialogComponent, {
+          width: '800px',
+          disableClose: false,
+          data: fullCombination
+        });
 
-    dialogRef.afterClosed().subscribe((result: any) => {
-      if (result && result.id) {
-        console.log('Updating combination:', result);
-        this.apiService.updateCombination(result.id, {
-          title: result.title,
-          side: result.side,
-          matrix: result.matrix
-        }).subscribe({
-          next: (response) => {
-            console.log('Combination updated successfully:', response);
-            this.loadCombinations();
-          },
-          error: (error) => {
-            console.error('Error updating combination:', error);
+        dialogRef.afterClosed().subscribe((result: any) => {
+          if (result && result.id) {
+            console.log('Updating combination:', result);
+            this.apiService.updateCombination(result.id, {
+              title: result.title,
+              side: result.side,
+              matrix: result.matrix
+            }).subscribe({
+              next: (response) => {
+                console.log('Combination updated successfully:', response);
+                this.loadCombinations();
+              },
+              error: (error) => {
+                console.error('Error updating combination:', error);
+              }
+            });
           }
         });
+      },
+      error: (error) => {
+        console.error('Error loading combination for edit:', error);
+        this.loading = false;
       }
     });
   }
 
-  onDelete(combination: Combination): void {
+  onDelete(combination: CombinationSummary): void {
     const dialogRef = this.dialog.open(ConfirmDeleteDialogComponent, {
       width: '400px',
       data: { title: combination.title }
@@ -158,11 +169,21 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  onRowClick(combination: Combination): void {
-    this.dialog.open(MatrixViewerDialogComponent, {
-      width: '800px',
-      maxWidth: '90vw',
-      data: combination
+  onRowClick(combination: CombinationSummary): void {
+    this.loading = true;
+    this.apiService.getCombination(combination.id).subscribe({
+      next: (fullCombination: Combination) => {
+        this.loading = false;
+        this.dialog.open(MatrixViewerDialogComponent, {
+          width: '800px',
+          maxWidth: '90vw',
+          data: fullCombination
+        });
+      },
+      error: (error) => {
+        console.error('Error loading combination details:', error);
+        this.loading = false;
+      }
     });
   }
 }

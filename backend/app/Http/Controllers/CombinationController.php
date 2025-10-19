@@ -199,8 +199,11 @@ class CombinationController extends Controller
         // Validate sort order
         $sortOrder = strtolower($sortOrder) === 'asc' ? 'asc' : 'desc';
 
-        // Apply sorting
-        $combinations = $query->orderBy($sortBy, $sortOrder)->get();
+        // Apply sorting and select only columns needed for list view
+        $combinations = $query
+            ->select('id', 'title', 'side', 'visible_count', 'created_at', 'updated_at')
+            ->orderBy($sortBy, $sortOrder)
+            ->get();
 
         return response()->json($combinations);
     }

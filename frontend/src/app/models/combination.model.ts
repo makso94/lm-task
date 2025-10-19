@@ -1,13 +1,18 @@
-export interface Combination {
+// Summary data returned from list endpoint
+export interface CombinationSummary {
   id: number;
   title: string;
   side: number;
-  matrix: number[][];
   visible_count: number;
-  visible_positions: [number, number][];
-  not_visible_positions: [number, number][];
   created_at: string;
   updated_at: string;
+}
+
+// Full combination data with matrix and positions
+export interface Combination extends CombinationSummary {
+  matrix: number[][];
+  visible_positions: [number, number][];
+  not_visible_positions: [number, number][];
 }
 
 export interface CreateCombinationRequest {
@@ -21,7 +26,7 @@ export interface CombinationResponse {
   data: Combination;
 }
 
-export interface CombinationsListResponse extends Array<Combination> {}
+export interface CombinationsListResponse extends Array<CombinationSummary> {}
 
 export type SortOrder = 'asc' | 'desc' | '';
 

@@ -17,7 +17,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { Combination, SortableColumn, SortOrder } from '../../models/combination.model';
+import { CombinationSummary, SortableColumn, SortOrder } from '../../models/combination.model';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -42,20 +42,20 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
   styleUrl: './combination-list.scss',
 })
 export class CombinationList implements OnInit, OnChanges, AfterViewInit {
-  @Input() combinations: Combination[] = [];
+  @Input() combinations: CombinationSummary[] = [];
   @Input() loading = false;
   @Input() initialSortBy: SortableColumn = 'created_at';
   @Input() initialSortOrder: SortOrder = 'desc';
   @Output() sortChange = new EventEmitter<{ column: SortableColumn; direction: SortOrder }>();
   @Output() filterChange = new EventEmitter<string>();
-  @Output() edit = new EventEmitter<Combination>();
-  @Output() delete = new EventEmitter<Combination>();
-  @Output() rowClick = new EventEmitter<Combination>();
+  @Output() edit = new EventEmitter<CombinationSummary>();
+  @Output() delete = new EventEmitter<CombinationSummary>();
+  @Output() rowClick = new EventEmitter<CombinationSummary>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   displayedColumns: string[] = ['title', 'side', 'visible_count', 'created_at', 'updated_at', 'actions'];
-  filteredCombinations: Combination[] = [];
-  paginatedCombinations: Combination[] = [];
+  filteredCombinations: CombinationSummary[] = [];
+  paginatedCombinations: CombinationSummary[] = [];
   filterControl = new FormControl('');
 
   // Internal state for current sort
@@ -126,15 +126,15 @@ export class CombinationList implements OnInit, OnChanges, AfterViewInit {
     this.paginatedCombinations = this.filteredCombinations.slice(startIndex, endIndex);
   }
 
-  onEdit(combination: Combination): void {
+  onEdit(combination: CombinationSummary): void {
     this.edit.emit(combination);
   }
 
-  onDelete(combination: Combination): void {
+  onDelete(combination: CombinationSummary): void {
     this.delete.emit(combination);
   }
 
-  onRowClick(combination: Combination): void {
+  onRowClick(combination: CombinationSummary): void {
     this.rowClick.emit(combination);
   }
 }

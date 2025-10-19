@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Combination, CreateCombinationRequest, CombinationResponse, CombinationQueryParams } from '../models/combination.model';
+import { Combination, CombinationSummary, CreateCombinationRequest, CombinationResponse, CombinationQueryParams } from '../models/combination.model';
 
 const API = '/api';
 
@@ -12,7 +12,7 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}
 
-  getCombinations(queryParams?: CombinationQueryParams): Observable<Combination[]> {
+  getCombinations(queryParams?: CombinationQueryParams): Observable<CombinationSummary[]> {
     let params = new HttpParams();
 
     if (queryParams?.sort_by) {
@@ -27,7 +27,7 @@ export class ApiService {
       params = params.set('filter', queryParams.filter);
     }
 
-    return this.http.get<Combination[]>(`${API}/combinations`, { params });
+    return this.http.get<CombinationSummary[]>(`${API}/combinations`, { params });
   }
 
   createCombination(data: CreateCombinationRequest): Observable<CombinationResponse> {
