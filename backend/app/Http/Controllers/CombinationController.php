@@ -96,7 +96,7 @@ class CombinationController extends Controller
                 if ($val === 0) {
                     continue;
                 }
-                if ($val >= $maxSeen) {
+                if ($val > $maxSeen) {
                     $markVisible($i, $j);
                     $maxSeen = $val;
                 }
@@ -111,7 +111,7 @@ class CombinationController extends Controller
                 if ($val === 0) {
                     continue;
                 }
-                if ($val >= $maxSeen) {
+                if ($val > $maxSeen) {
                     $markVisible($i, $j);
                     $maxSeen = $val;
                 }
@@ -126,7 +126,7 @@ class CombinationController extends Controller
                 if ($val === 0) {
                     continue;
                 }
-                if ($val >= $maxSeen) {
+                if ($val > $maxSeen) {
                     $markVisible($i, $j);
                     $maxSeen = $val;
                 }
@@ -141,7 +141,7 @@ class CombinationController extends Controller
                 if ($val === 0) {
                     continue;
                 }
-                if ($val >= $maxSeen) {
+                if ($val > $maxSeen) {
                     $markVisible($i, $j);
                     $maxSeen = $val;
                 }
